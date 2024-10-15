@@ -5,7 +5,8 @@ use std::io::{BufReader, BufWriter};
 
 #[derive(Serialize, Deserialize)]
 pub struct Account {
-    account: String,
+    label: String,
+    email: String,
     username: String,
     password: String,
     description: String,
@@ -13,22 +14,24 @@ pub struct Account {
 
 impl Account {
     pub fn display(&self) {
-        println!("Account: {}", self.account);
+        println!("Label: {}", self.label);
+        println!("Email: {}", self.email);
         println!("Username: {}", self.username);
         println!("Password: {}", self.password);
         println!("Description: {}", self.description);
     }
 }
 
-pub fn add(account: String, username: String, password: String, description: String) {
+pub fn add(label: String, email: String, username: String, password: String, description: String) {
     let new_account = Account {
-        account,
+        label,
+        email,
         username,
         password,
         description,
     };
 
-    append_to_file(new_account);
+    append_to_file(new_account).unwrap();
 }
 
 pub fn display() {
@@ -49,7 +52,13 @@ fn read_from_file() -> Result<Vec<Account>> {
 }
 
 fn append_to_file(account: Account) -> Result<()> {
-    let mut accounts: Vec<Account> = read_from_file().unwrap();
+    let mut accounts: Vec<Account> = read_from_file()?;
+    let label = account.label.clone();
+
+    if accounts.iter().any(|existing_account| existing_account.label == account.label) {
+        println!("Error: An entry with the label '{}' already exists. Please use a different label", account.label);
+        return Ok(());
+    }
 
     accounts.push(account);
 
@@ -63,6 +72,7 @@ fn append_to_file(account: Account) -> Result<()> {
 
     to_writer_pretty(writer, &accounts)?;
 
+    println!("Success: The entry for '{}' has been saved successfully.", label);
     Ok(())
 }
 
