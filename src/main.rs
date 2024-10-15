@@ -2,6 +2,8 @@ use clap::{Parser, Subcommand};
 use rpassword::read_password;
 use std::io::{self, Write};
 
+mod manager;
+
 #[derive(Parser)]
 #[clap(name = "password-manager")]
 #[clap(author = "Leonhard Leung", version, about = "A simple CLI password manager", long_about = None)]
