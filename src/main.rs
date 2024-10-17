@@ -5,7 +5,7 @@ mod manager;
 mod util;
 
 #[derive(Parser)]
-#[clap(name = "password-manager")]
+#[clap(name = "Password Manager")]
 #[clap(author = "Leonhard Leung", version, about = "A simple CLI password manager", long_about = None)]
 struct Cli {
     #[clap(subcommand)]
@@ -56,6 +56,10 @@ enum Commands {
 }
 
 fn main() {
+    if !util::file_exists() {
+        println!("Created necessary files and directories");
+    }
+
     let cli = Cli::parse();
 
     match cli.command {

@@ -31,7 +31,7 @@ pub fn get_data() -> serde_json::Result<Vec<Account>> {
     let mut contents = String::new();
     reader.read_to_string(&mut contents).expect("Could not read file");
 
-    if contents.is_empty() {
+    if contents.trim().is_empty() {
         return Ok(Vec::new());
     }
 
