@@ -1,6 +1,5 @@
 use clap::{Parser, Subcommand};
-use rpassword::read_password;
-use std::io::{self, Write};
+use std::io::Write;
 
 mod manager;
 mod util;
@@ -56,44 +55,12 @@ enum Commands {
     }
 }
 
-fn add_account() {
-    let label = input("Label: ");
-    let username = input("Username: ");
-    let email = input("Email: ");
-
-    let password = loop {
-        print!("Enter Password: ");
-        io::stdout().flush().unwrap();
-        let password = read_password().unwrap();
-
-        print!("Confirm Password: ");
-        io::stdout().flush().unwrap();
-        let confirm_password = read_password().unwrap();
-
-        if password.eq(&confirm_password) {
-            break password;
-        } else {
-            println!("Password Mismatch. Please try again.");
-        }
-    };
-
-    let description = input("Description: ");
-}
-
-fn input(message: &str) -> String {
-    print!("{}", message);
-    io::stdout().flush().unwrap();
-    let mut input = String::new();
-    io::stdin().read_line(&mut input).unwrap();
-    input.trim().to_string()
-}
-
 fn main() {
     let cli = Cli::parse();
 
     match cli.command {
         Some(Commands::Add {}) => {
-            add_account();
+            manager::add();
         }
         Some(Commands::Edit { label, username, email, password, description }) => {
 
@@ -105,7 +72,7 @@ fn main() {
 
         }
         Some(Commands::List { simplify }) => {
-
+            manager::display_accounts();
         }
         None => {
             println!("No command was provided. Use --help for more information.");

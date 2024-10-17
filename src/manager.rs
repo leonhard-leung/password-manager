@@ -1,13 +1,14 @@
+use std::io;
+use std::io::Write;
+use rpassword::read_password;
 use serde::{Deserialize, Serialize};
-use serde_json::{to_writer_pretty, Result};
-use std::fs::{File, OpenOptions};
-use std::io::{BufReader, BufWriter};
+use crate::util;
 
 #[derive(Serialize, Deserialize)]
 pub struct Account {
     pub label: String,
-    pub email: String,
     pub username: String,
+    pub email: String,
     pub password: String,
     pub description: String,
 }
@@ -22,57 +23,47 @@ impl Account {
     }
 }
 
-pub fn add(label: String, email: String, username: String, password: String, description: String) {
+pub fn add() {
+    let label = util::get_user_input("Label: ");
+    let username = util::get_user_input("Username: ");
+    let email = util::get_user_input("Email: ");
+    let password = obtain_password();
+    let description = util::get_user_input("Description: ");
+
     let new_account = Account {
         label,
-        email,
         username,
+        email,
         password,
         description,
     };
 
-    append_to_file(new_account).unwrap();
+    util::save_to_file(new_account);
 }
 
-pub fn display() {
-    let accounts = read_from_file().unwrap();
+pub fn display_accounts() {
+    let accounts = util::get_data().unwrap();
 
     for account in &accounts {
         println!("{:#?}", account.display())
     }
 }
 
-fn read_from_file() -> Result<Vec<Account>> {
-    let file = File::open("data/passwords.json").expect("file not found");
-    let reader = BufReader::new(file);
+fn obtain_password() -> String {
+    let password = loop {
+        print!("Enter Password: ");
+        io::stdout().flush().unwrap();
+        let password = read_password().unwrap();
 
-    let accounts = serde_json::from_reader(reader)?;
+        print!("Confirm Password: ");
+        io::stdout().flush().unwrap();
+        let confirm_password = read_password().unwrap();
 
-    Ok(accounts)
+        if password.eq(&confirm_password) {
+            break password;
+        } else {
+            println!("Password Mismatch. Please try again.");
+        }
+    };
+    password
 }
-
-fn append_to_file(account: Account) -> Result<()> {
-    let mut accounts: Vec<Account> = read_from_file()?;
-    let label = account.label.clone();
-
-    if accounts.iter().any(|existing_account| existing_account.label == account.label) {
-        println!("Error: An entry with the label '{}' already exists. Please use a different label", account.label);
-        return Ok(());
-    }
-
-    accounts.push(account);
-
-    let file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open("data/passwords.json")
-        .expect("unable to open file for writing");
-
-    let writer = BufWriter::new(file);
-
-    to_writer_pretty(writer, &accounts)?;
-
-    println!("Success: The entry for '{}' has been saved successfully.", label);
-    Ok(())
-}
-

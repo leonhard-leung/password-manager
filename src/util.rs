@@ -1,12 +1,15 @@
 use std::path::Path;
 use std::fs::{File, OpenOptions};
 use std::fs::create_dir_all;
-use std::io::{BufReader, BufWriter, Read};
+use std::io;
+use std::io::{BufReader, BufWriter, Read, Write};
 use serde_json::to_writer_pretty;
 use crate::manager::Account;
 
+const FILE_PATH: &str = "C:\\Password Manager\\data\\passwords.json";
+
 pub fn file_exists() -> bool{
-    let path = Path::new("C:\\Password Manager\\data\\passwords.json");
+    let path = Path::new(FILE_PATH);
 
     if let Some(parent) = path.parent() {
         if !parent.exists() {
@@ -22,7 +25,7 @@ pub fn file_exists() -> bool{
 }
 
 pub fn get_data() -> serde_json::Result<Vec<Account>> {
-    let file = File::open("C:\\Password Manager\\data\\passwords.json").expect("Could not open file");
+    let file = File::open(FILE_PATH).expect("Could not open file");
     let mut reader = BufReader::new(file);
 
     let mut contents = String::new();
@@ -51,7 +54,7 @@ pub fn save_to_file(account: Account) {
     let file = OpenOptions::new()
         .write(true)
         .truncate(true)
-        .open("C:\\Password Manager\\data\\passwords.json")
+        .open(FILE_PATH)
         .expect("Could not create file");
 
     let writer = BufWriter::new(file);
@@ -60,4 +63,13 @@ pub fn save_to_file(account: Account) {
 
     println!("Wrote {} bytes", accounts.len());
     println!("Success: The entry for '{}' has been saved successfully", label);
+}
+
+pub fn get_user_input(message: &str) -> String {
+    print!("{}", message);
+    io::stdout().flush().unwrap();
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    input.trim().to_string()
 }
