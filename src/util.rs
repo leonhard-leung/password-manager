@@ -63,9 +63,11 @@ pub fn get_password_file_path() -> PathBuf {
     let app_data_path = std::env::var("APPDATA").unwrap();
     let path = Path::new(&app_data_path).join("Password Manager/data/passwords.json");
 
-    // Check if the parent directory (up to "Password Manager") exists
-    if let Some(parent) = path.parent().unwrap().parent().unwrap() {
-        create_dir_all(parent).expect("Could not create directory structure");
+    if let Some(parent) = path.parent() {
+        if let Some(grandparent) = parent.parent() {
+            create_dir_all(grandparent).expect("Could not create directory structure");
+        }
+        create_dir_all(parent).expect("Could not create data directory");
     }
 
     // Create the passwords.json file if it doesn't exist
@@ -79,4 +81,17 @@ pub fn get_password_file_path() -> PathBuf {
 pub fn file_exists() -> bool{
     let path = get_password_file_path();
     path.exists()
+}
+
+pub fn center_align_text(value: &str) -> String {
+    let value_len = value.len();
+    if value_len >= 5 {
+        return format!("{:<width$}", value, width = 5);
+    }
+
+    let padding_total = 5 - value_len;
+    let left_padding = padding_total / 2;
+    let right_padding = padding_total - left_padding;
+
+    format!("{}{}{}", " ".repeat(left_padding), value, " ".repeat(right_padding))
 }

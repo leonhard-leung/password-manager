@@ -76,7 +76,7 @@ fn main() {
 
         }
         Some(Commands::List { simplify }) => {
-            manager::display_accounts();
+            manager::display_accounts(simplify);
         }
         None => {
             println!("No command was provided. Use --help for more information.");
