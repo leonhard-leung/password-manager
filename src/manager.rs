@@ -5,11 +5,11 @@ use std::io::{BufReader, BufWriter};
 
 #[derive(Serialize, Deserialize)]
 pub struct Account {
-    label: String,
-    email: String,
-    username: String,
-    password: String,
-    description: String,
+    pub label: String,
+    pub email: String,
+    pub username: String,
+    pub password: String,
+    pub description: String,
 }
 
 impl Account {

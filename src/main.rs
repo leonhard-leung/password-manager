@@ -3,6 +3,7 @@ use rpassword::read_password;
 use std::io::{self, Write};
 
 mod manager;
+mod util;
 
 #[derive(Parser)]
 #[clap(name = "password-manager")]
@@ -19,25 +20,25 @@ enum Commands {
 
     /// Edit the attributes of an existing account
     Edit {
-        #[arg(short = "l", long = "label")]
+        #[arg(short = 'l', long = "label")]
         label: String,
 
-        #[arg(short = "u", long = "username")]
+        #[arg(short = 'u', long = "username")]
         username: String,
 
-        #[arg(short = "e", long = "email")]
+        #[arg(short = 'e', long = "email")]
         email: String,
 
-        #[arg(short = "p", long = "password")]
+        #[arg(short = 'p', long = "password")]
         password: String,
 
-        #[arg(short = "d", long = "description")]
+        #[arg(short = 'd', long = "description")]
         description: String,
     },
 
     /// Generate a new password for an existing account
-    GeneratePassword {
-        #[arg(short = "len", long = "length")]
+    GenPass {
+        #[arg(short = 'l', long = "length")]
         length: u32,
 
         label: String,
@@ -50,7 +51,7 @@ enum Commands {
 
     /// List all stored accounts
     List {
-        #[arg(short = "sim", long = "simplify")]
+        #[arg(short = 's', long = "simplify")] 
         simplify: bool,
     }
 }
@@ -97,7 +98,7 @@ fn main() {
         Some(Commands::Edit { label, username, email, password, description }) => {
 
         }
-        Some(Commands::GeneratePassword { length, label }) => {
+        Some(Commands::GenPass { length, label }) => {
 
         }
         Some(Commands::Remove { label }) => {
