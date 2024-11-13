@@ -36,7 +36,8 @@ pub fn get_data() -> serde_json::Result<Vec<Account>> {
         return Ok(Vec::new());
     }
 
-    let accounts: Vec<Account> = serde_json::from_str(&contents).expect("JSON was not well-formatted");
+    let accounts: Vec<Account> = serde_json::from_str(&contents)
+        .expect("JSON was not well-formatted");
 
     Ok(accounts)
 }
@@ -46,7 +47,10 @@ pub fn save_to_file(account: Account) {
     let label = account.label.clone();
 
     if accounts.iter().any(|account| account.label == label) {
-        println!("Error: An entry with the label '{}' already exists. Please use a different label", label);
+        println!(
+            "Error: An entry with the label '{}' already exists. \
+            Please use a different label", label
+        );
         return
     }
 
