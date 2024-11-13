@@ -4,6 +4,7 @@ use std::fs::create_dir_all;
 use std::io;
 use std::io::{BufReader, BufWriter, Read, Write};
 use serde_json::to_writer_pretty;
+use rpassword::read_password;
 use crate::manager::Account;
 
 const FILE_PATH: &str = "C:\\Password Manager\\data\\passwords.json";
@@ -72,4 +73,23 @@ pub fn get_user_input(message: &str) -> String {
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
     input.trim().to_string()
+}
+
+pub fn get_password() -> String {
+    let password = loop {
+        print!("Enter Password: ");
+        io::stdout().flush().unwrap();
+        let password = read_password().unwrap();
+
+        print!("Confirm Password: ");
+        io::stdout().flush().unwrap();
+        let confirm_password = read_password().unwrap();
+
+        if password.eq(&confirm_password) {
+            break password;
+        } else {
+            println!("Password Mismatch. Please try again.");
+        }
+    };
+    password
 }
