@@ -6,6 +6,18 @@ use std::io;
 use std::io::Write;
 use textwrap::wrap;
 
+
+/// Represents an account stored in the password manager.
+///
+/// This struct holds the account's label, username, email, password, and description.
+///
+/// # Fields
+///
+/// * `label` - A short identifier for the account (e.g., "Facebook", "Email").
+/// * `username` - The username associated with the account.
+/// * `email` - The email address associated with the account.
+/// * `password` - The password for the account.
+/// * `description` - A description or notes about the account.
 #[derive(Serialize, Deserialize)]
 pub struct Account {
     pub label: String,
@@ -17,12 +29,20 @@ pub struct Account {
 
 impl Account {
     pub fn display(&self) {
+        /// Displays the account information in a formatted manner.
+        ///
+        /// This method formats and wraps the account's details into lines of text that are
+        /// printed in a readable format. The fields are displayed with specific widths and
+        /// wrapped if necessary.
+        ///
+        /// The method uses `Self::format` to print each field with appropriate spacing.
         let wrap_label = wrap(&self.label, 28);
         let wrap_username = wrap(&self.username, 28);
         let wrap_email = wrap(&self.email, 28);
         let wrap_password = wrap(&self.password, 28);
         let wrap_description = wrap(&self.description, 28);
 
+        // Print each field of the account in a formatted manner
         Self::format(6, "Label".to_string(), wrap_label);
         Self::format(3, "Username".to_string(), wrap_username);
         Self::format(6, "Email".to_string(), wrap_email);
@@ -30,6 +50,21 @@ impl Account {
         Self::format(0, "Description".to_string(), wrap_description);
     }
 
+    /// Formats and prints each attribute of the account with specific indentation and wrapping.
+    ///
+    /// This function ensures that the output is properly aligned and wrapped.
+    ///
+    /// # Arguments
+    ///
+    /// * `empty_spaces` - The number of spaces to pad before printing the field name.
+    /// * `attribute_name` - The name of the attribute being displayed (e.g., "Label").
+    /// * `wrap_description` - The wrapped lines of the field's value.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// Account::format(4, "Label".to_string(), wrapped_label);
+    /// ```
     fn format(empty_spaces: usize, attribute_name: String, wrap_description: Vec<Cow<str>>) {
         let data_width: usize = 31;
 
@@ -43,6 +78,17 @@ impl Account {
     }
 }
 
+/// Prompts the user to input information for a new account and saves it.
+///
+/// This function collects user input for the account's label, username, email,
+/// password, and description. After collecting the necessary data, it creates
+/// a new `Account` and saves it to the `passwords.json` file using `util::save_to_file`.
+///
+/// # Example
+///
+/// ```rust
+/// util::add();
+/// ```
 pub fn add() {
     let label = util::get_user_input("Label: ");
     let username = util::get_user_input("Username: ");
@@ -61,6 +107,23 @@ pub fn add() {
     util::save_to_file(new_account);
 }
 
+/// Displays a list of all accounts in the password manager.
+///
+/// This function prints all stored accounts. If `simplify` is set to `true`,
+/// it only displays the account labels and their index. Otherwise, it displays
+/// the full details of each account, including label, username, email, password,
+/// and description, in a formatted table-like structure.
+///
+/// # Arguments
+///
+/// * `simplify` - A flag indicating whether to display only the account labels
+///   (`true` for simplified, `false` for detailed view).
+///
+/// # Example
+///
+/// ```rust
+/// util::display_accounts(false);  // Display full account details.
+/// util::display_accounts(true);   // Display only account labels.
 pub fn display_accounts(simplify: bool) {
     let accounts = util::get_data().unwrap();
 
