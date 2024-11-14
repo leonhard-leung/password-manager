@@ -4,6 +4,7 @@ use std::fs::create_dir_all;
 use std::io;
 use std::io::{BufReader, BufWriter, Read, Write};
 use serde_json::to_writer_pretty;
+use rpassword::read_password;
 use crate::manager::Account;
 
 pub fn get_data() -> serde_json::Result<Vec<Account>> {
@@ -18,7 +19,8 @@ pub fn get_data() -> serde_json::Result<Vec<Account>> {
         return Ok(Vec::new());
     }
 
-    let accounts: Vec<Account> = serde_json::from_str(&contents).expect("JSON was not well-formatted");
+    let accounts: Vec<Account> = serde_json::from_str(&contents)
+        .expect("JSON was not well-formatted");
 
     Ok(accounts)
 }
@@ -28,7 +30,10 @@ pub fn save_to_file(account: Account) {
     let label = account.label.clone();
 
     if accounts.iter().any(|account| account.label == label) {
-        println!("Error: An entry with the label '{}' already exists. Please use a different label", label);
+        println!(
+            "Error: An entry with the label '{}' already exists. \
+            Please use a different label", label
+        );
         return
     }
 
@@ -94,4 +99,23 @@ pub fn center_align_text(value: &str) -> String {
     let right_padding = padding_total - left_padding;
 
     format!("{}{}{}", " ".repeat(left_padding), value, " ".repeat(right_padding))
+}
+
+pub fn get_password() -> String {
+    let password = loop {
+        print!("Enter Password: ");
+        io::stdout().flush().unwrap();
+        let password = read_password().unwrap();
+
+        print!("Confirm Password: ");
+        io::stdout().flush().unwrap();
+        let confirm_password = read_password().unwrap();
+
+        if password.eq(&confirm_password) {
+            break password;
+        } else {
+            println!("Password Mismatch. Please try again.");
+        }
+    };
+    password
 }

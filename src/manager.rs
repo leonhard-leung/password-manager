@@ -47,7 +47,7 @@ pub fn add() {
     let label = util::get_user_input("Label: ");
     let username = util::get_user_input("Username: ");
     let email = util::get_user_input("Email: ");
-    let password = obtain_password();
+    let password = util::get_password();
     let description = util::get_user_input("Description: ");
 
     let new_account = Account {
@@ -75,23 +75,4 @@ pub fn display_accounts(simplify: bool) {
             println!("{}. {}", index + 1, account.label);
         }
     }
-}
-
-fn obtain_password() -> String {
-    let password = loop {
-        print!("Enter Password: ");
-        io::stdout().flush().unwrap();
-        let password = read_password().unwrap();
-
-        print!("Confirm Password: ");
-        io::stdout().flush().unwrap();
-        let confirm_password = read_password().unwrap();
-
-        if password.eq(&confirm_password) {
-            break password;
-        } else {
-            println!("Password Mismatch. Please try again.");
-        }
-    };
-    password
 }

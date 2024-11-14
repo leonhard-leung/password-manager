@@ -6,7 +6,11 @@ mod util;
 
 #[derive(Parser)]
 #[clap(name = "Password Manager")]
-#[clap(author = "Leonhard Leung", version, about = "A simple CLI password manager", long_about = None)]
+#[clap(
+    author = "Leonhard Leung",
+    version = "0.1.0-alpha",
+    about = "A simple CLI password manager"
+)]
 struct Cli {
     #[clap(subcommand)]
     command: Option<Commands>,
@@ -66,18 +70,32 @@ fn main() {
         Some(Commands::Add {}) => {
             manager::add();
         }
-        Some(Commands::Edit { label, username, email, password, description }) => {
+
+        Some(Commands::Edit {
+                 label,
+                 username,
+                 email,
+                 password,
+                 description
+             }) => {
 
         }
-        Some(Commands::GenPass { length, label }) => {
+
+        Some(Commands::GenPass {
+                 length,
+                 label
+             }) => {
 
         }
+
         Some(Commands::Remove { label }) => {
 
         }
+
         Some(Commands::List { simplify }) => {
             manager::display_accounts(simplify);
         }
+
         None => {
             println!("No command was provided. Use --help for more information.");
         }
