@@ -8,7 +8,7 @@ mod util;
 #[clap(name = "Password Manager")]
 #[clap(
     author = "Leonhard Leung",
-    version = "0.1.0-alpha",
+    version = "0.1.0",
     about = "A simple CLI password manager"
 )]
 struct Cli {
