@@ -1,11 +1,7 @@
-use std::borrow::Cow;
 use crate::util;
-use rpassword::read_password;
 use serde::{Deserialize, Serialize};
-use std::io;
-use std::io::Write;
+use std::borrow::Cow;
 use textwrap::wrap;
-
 
 /// Represents an account stored in the password manager.
 ///
@@ -70,7 +66,12 @@ impl Account {
 
         for (index, line) in wrap_description.into_iter().enumerate() {
             if index == 0 {
-                println!("│   {}: {:width$}│", attribute_name, line, width = data_width + empty_spaces);
+                println!(
+                    "│   {}: {:width$}│",
+                    attribute_name,
+                    line,
+                    width = data_width + empty_spaces
+                );
             } else {
                 println!("│                {:width$}│", line, width = data_width);
             }
@@ -128,7 +129,7 @@ pub fn display_accounts(simplify: bool) {
     let accounts = util::get_data().unwrap();
 
     for (index, account) in accounts.iter().enumerate() {
-        let centered = util::center_align_text(&*(index + 1).to_string());
+        let centered = util::center_align_text(&(index + 1).to_string());
 
         if !simplify {
             println!("┌{}< {} >{}┐", "─".repeat(19), centered, "─".repeat(19));

@@ -1,5 +1,4 @@
 use clap::{Parser, Subcommand};
-use std::io::Write;
 
 mod manager;
 mod util;
@@ -48,15 +47,13 @@ enum Commands {
     },
 
     /// Remove an existing account
-    Remove {
-        label: String,
-    },
+    Remove { label: String },
 
     /// List all stored accounts
     List {
-        #[arg(short = 's', long = "simplify")] 
+        #[arg(short = 's', long = "simplify")]
         simplify: bool,
-    }
+    },
 }
 
 fn main() {
@@ -72,25 +69,16 @@ fn main() {
         }
 
         Some(Commands::Edit {
-                 label,
-                 username,
-                 email,
-                 password,
-                 description
-             }) => {
+            label,
+            username,
+            email,
+            password,
+            description,
+        }) => {}
 
-        }
+        Some(Commands::GenPass { length, label }) => {}
 
-        Some(Commands::GenPass {
-                 length,
-                 label
-             }) => {
-
-        }
-
-        Some(Commands::Remove { label }) => {
-
-        }
+        Some(Commands::Remove { label }) => {}
 
         Some(Commands::List { simplify }) => {
             manager::display_accounts(simplify);

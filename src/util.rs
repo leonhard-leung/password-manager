@@ -1,11 +1,11 @@
-use std::path::{Path, PathBuf};
-use std::fs::{File, OpenOptions};
+use crate::manager::Account;
+use rpassword::read_password;
+use serde_json::to_writer_pretty;
 use std::fs::create_dir_all;
+use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{BufReader, BufWriter, Read, Write};
-use serde_json::to_writer_pretty;
-use rpassword::read_password;
-use crate::manager::Account;
+use std::path::{Path, PathBuf};
 
 /// Retrieves a list of accounts stored in the `passwords.json` file.
 ///
@@ -30,14 +30,16 @@ pub fn get_data() -> serde_json::Result<Vec<Account>> {
     let mut reader = BufReader::new(file);
 
     let mut contents = String::new();
-    reader.read_to_string(&mut contents).expect("Could not read file");
+    reader
+        .read_to_string(&mut contents)
+        .expect("Could not read file");
 
     if contents.trim().is_empty() {
         return Ok(Vec::new());
     }
 
-    let accounts: Vec<Account> = serde_json::from_str(&contents)
-        .expect("JSON was not well-formatted");
+    let accounts: Vec<Account> =
+        serde_json::from_str(&contents).expect("JSON was not well-formatted");
 
     Ok(accounts)
 }
@@ -67,9 +69,10 @@ pub fn save_to_file(account: Account) {
     if accounts.iter().any(|account| account.label == label) {
         println!(
             "Error: An entry with the label '{}' already exists. \
-            Please use a different label", label
+            Please use a different label",
+            label
         );
-        return
+        return;
     }
 
     accounts.push(account);
@@ -86,8 +89,15 @@ pub fn save_to_file(account: Account) {
 
     to_writer_pretty(writer, &accounts).unwrap();
 
-    println!("Wrote {} {}", accounts.len(), if accounts.len() == 1 { "byte" } else { "bytes" });
-    println!("Success: The entry for '{}' has been saved successfully", label);
+    println!(
+        "Wrote {} {}",
+        accounts.len(),
+        if accounts.len() == 1 { "byte" } else { "bytes" }
+    );
+    println!(
+        "Success: The entry for '{}' has been saved successfully",
+        label
+    );
 }
 
 /// Prompts the user to input a string.
@@ -175,7 +185,7 @@ pub fn get_password_file_path() -> PathBuf {
 ///     println!("File does not exist.");
 /// }
 /// ```
-pub fn file_exists() -> bool{
+pub fn file_exists() -> bool {
     let path = get_password_file_path();
     path.exists()
 }
@@ -209,7 +219,12 @@ pub fn center_align_text(value: &str) -> String {
     let left_padding = padding_total / 2;
     let right_padding = padding_total - left_padding;
 
-    format!("{}{}{}", " ".repeat(left_padding), value, " ".repeat(right_padding))
+    format!(
+        "{}{}{}",
+        " ".repeat(left_padding),
+        value,
+        " ".repeat(right_padding)
+    )
 }
 
 /// Prompts the user to input and confirm a password.
@@ -229,7 +244,7 @@ pub fn center_align_text(value: &str) -> String {
 /// println!("Password: {}", password);
 /// ```
 pub fn get_password() -> String {
-    let password = loop {
+    loop {
         print!("Enter Password: ");
         io::stdout().flush().unwrap();
         let password = read_password().unwrap();
@@ -243,6 +258,5 @@ pub fn get_password() -> String {
         } else {
             println!("Password Mismatch. Please try again.");
         }
-    };
-    password
+    }
 }
