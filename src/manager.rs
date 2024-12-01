@@ -25,13 +25,13 @@ pub struct Account {
 
 impl Account {
     pub fn display(&self) {
-        /// Displays the account information in a formatted manner.
-        ///
-        /// This method formats and wraps the account's details into lines of text that are
-        /// printed in a readable format. The fields are displayed with specific widths and
-        /// wrapped if necessary.
-        ///
-        /// The method uses `Self::format` to print each field with appropriate spacing.
+        // Displays the account information in a formatted manner.
+        //
+        // This method formats and wraps the account's details into lines of text that are
+        // printed in a readable format. The fields are displayed with specific widths and
+        // wrapped if necessary.
+        //
+        // The method uses `Self::format` to print each field with appropriate spacing.
         let wrap_label = wrap(&self.label, 28);
         let wrap_username = wrap(&self.username, 28);
         let wrap_email = wrap(&self.email, 28);
