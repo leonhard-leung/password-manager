@@ -1,0 +1,54 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      rust-cache-key: ${{ steps.cache.outputs.cache-hit }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Cache Rust Toolchain
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            ~/.rustup
+          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            rust-toolchain-
+
+      - name: Install Rust (if not cached)
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+  format:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Format
+        run: cargo fmt -- --check
+
+  lint:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Lint
+        run: cargo clippy -- -D warnings
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Tests
+        run: cargo test
