@@ -10,7 +10,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      rust-cache-hit: ${{ steps.cache.outputs.cache-hit }}
+      rust-cache-hit: ${{ steps.rust-toolchain-build.outputs.cache-hit }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
             rust-toolchain-
 
       - name: Install Rust (if not cached)
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: ${{ steps.rust-toolchain-build.outputs.cache-hit != 'true' }}
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -36,6 +36,16 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Restore Rust Toolchain Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            ~/.rustup
+          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            rust-toolchain-
+            
       - name: Check Format
         run: cargo fmt -- --check
 
@@ -43,6 +53,16 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Restore Rust Toolchain Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            ~/.rustup
+          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            rust-toolchain-
+            
       - name: Check Lint
         run: cargo clippy -- -D warnings
 
@@ -50,5 +70,15 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Restore Rust Toolchain Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            ~/.rustup
+          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            rust-toolchain-
+    
       - name: Run Tests
         run: cargo test
