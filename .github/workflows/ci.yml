@@ -36,6 +36,9 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+    
       - name: Restore Rust Toolchain Cache
         uses: actions/cache@v4
         with:
@@ -53,6 +56,9 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+    
       - name: Restore Rust Toolchain Cache
         uses: actions/cache@v4
         with:
@@ -70,6 +76,9 @@ jobs:
     needs: setup
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+    
       - name: Restore Rust Toolchain Cache
         uses: actions/cache@v4
         with:
