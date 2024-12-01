@@ -10,13 +10,13 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      rust-cache-key: ${{ steps.cache.outputs.cache-hit }}
+      rust-cache-hit: ${{ steps.cache.outputs.cache-hit }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Cache Rust Toolchain
-        id: cache
+      - name: Caching Rust Toolchain
+        id: rust-toolchain-build
         uses: actions/cache@v4
         with:
           path: |
