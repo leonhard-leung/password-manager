@@ -56,6 +56,7 @@ enum Commands {
     },
 }
 
+#[allow(unused_variables)]
 fn main() {
     if !util::file_exists() {
         println!("Created necessary files and directories");
