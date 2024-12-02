@@ -79,7 +79,9 @@ fn main() {
 
         Some(Commands::GenPass { length, label }) => {}
 
-        Some(Commands::Remove { label }) => {}
+        Some(Commands::Remove { label }) => {
+            manager::remove(label);
+        }
 
         Some(Commands::List { simplify }) => {
             manager::display_accounts(simplify);

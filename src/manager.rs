@@ -1,4 +1,5 @@
 use crate::util;
+use crate::util::get_data;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use textwrap::wrap;
@@ -105,7 +106,49 @@ pub fn add() {
         description,
     };
 
-    util::save_to_file(new_account);
+    util::append_to_file(new_account);
+}
+
+/// Removes an existing account from the application.
+///
+/// This function reads the `passwords.json` file and checks if the provided label
+/// matches an existing account. If a match is found, the account is removed from
+/// the file and the updated data is saved. If no match is found, an error message
+/// is displayed.
+///
+/// # Arguments
+///
+/// * `label` - the name of the account to be removed.
+///
+/// # Example
+/// ```rust
+/// let label = String::from("Sample Account");
+/// util::remove(label);
+/// ```
+///
+/// # Errors
+///
+/// This function will panic if the file cannot be written to during the save operation.
+pub fn remove(label: String) {
+    let mut accounts: Vec<Account> = match get_data() {
+        Ok(accounts) => accounts,
+        Err(e) => {
+            println!("Error getting data: {}", e);
+            return;
+        }
+    };
+
+    if let Some(index) = accounts.iter().position(|account| account.label == label) {
+        accounts.remove(index);
+        util::save_to_file(&accounts);
+        println!("Success: The entry '{}' has been removed", label);
+    } else {
+        println!(
+            "Error: An entry with the label '{}' cannot be found. \
+            Please check the label and try again",
+            label
+        );
+    }
 }
 
 /// Displays a list of all accounts in the password manager.
