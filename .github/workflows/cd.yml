@@ -23,3 +23,9 @@ jobs:
           docker stop password-manager-container || true
           docker rm password-manager-container || true
           docker run -d --name password-manager-container -p 8080:8080 password-manager:latest
+
+      - name: List Containers
+        run: docker ps -a
+
+      - name: Show logs for the container
+        run: docker logs password-manager-container
