@@ -109,7 +109,26 @@ pub fn add() {
     util::append_to_file(new_account);
 }
 
+/// Removes an existing account from the application.
 ///
+/// This function reads the `passwords.json` file and checks if the provided label
+/// matches an existing account. If a match is found, the account is removed from
+/// the file and the updated data is saved. If no match is found, an error message
+/// is displayed.
+///
+/// # Arguments
+///
+/// * `label` - the name of the account to be removed.
+///
+/// # Example
+/// ```rust
+/// let label = String::from("Sample Account");
+/// util::remove(label);
+/// ```
+///
+/// # Errors
+///
+/// This function will panic if the file cannot be written to during the save operation.
 pub fn remove(label: String) {
     let mut accounts: Vec<Account> = match get_data() {
         Ok(accounts) => accounts,
