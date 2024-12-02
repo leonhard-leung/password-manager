@@ -1,4 +1,5 @@
 use crate::util;
+use crate::util::get_data;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use textwrap::wrap;
@@ -105,7 +106,30 @@ pub fn add() {
         description,
     };
 
-    util::save_to_file(new_account);
+    util::append_to_file(new_account);
+}
+
+///
+pub fn remove(label: String) {
+    let mut accounts: Vec<Account> = match get_data() {
+        Ok(accounts) => accounts,
+        Err(e) => {
+            println!("Error getting data: {}", e);
+            return;
+        }
+    };
+
+    if let Some(index) = accounts.iter().position(|account| account.label == label) {
+        accounts.remove(index);
+        util::save_to_file(&accounts);
+        println!("Success: The entry '{}' has been removed", label);
+    } else {
+        println!(
+            "Error: An entry with the label '{}' cannot be found. \
+            Please check the label and try again",
+            label
+        );
+    }
 }
 
 /// Displays a list of all accounts in the password manager.

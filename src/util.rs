@@ -44,7 +44,7 @@ pub fn get_data() -> serde_json::Result<Vec<Account>> {
     Ok(accounts)
 }
 
-/// Saves an account to the `passwords.json` file.
+/// Appends an account to the `passwords.json` file.
 ///
 /// This function adds a new account to the JSON file. If an account with the same label
 /// already exists, it will print an error message and not save the new account.
@@ -56,14 +56,27 @@ pub fn get_data() -> serde_json::Result<Vec<Account>> {
 /// # Example
 ///
 /// ```rust
-/// util::save_to_file(new_account);
+/// let new_account = Account {
+///     label: String::from("example"),
+///     username: String::from("John"),
+///     email: String::from("JohnDoe@example.com"),
+///     password: String::from("password"),
+///     description: String::from("example account"),
+/// };
+/// util::append_to_file(new_account);
 /// ```
 ///
 /// # Errors
 ///
 /// This function will panic if there are issues opening, writing, or serializing the file.
-pub fn save_to_file(account: Account) {
-    let mut accounts: Vec<Account> = get_data().unwrap();
+pub fn append_to_file(account: Account) {
+    let mut accounts: Vec<Account> = match get_data() {
+        Ok(accounts) => accounts,
+        Err(e) => {
+            println!("Error getting data: {}", e);
+            return;
+        }
+    };
     let label = account.label.clone();
 
     if accounts.iter().any(|account| account.label == label) {
@@ -76,7 +89,33 @@ pub fn save_to_file(account: Account) {
     }
 
     accounts.push(account);
+    save_to_file(&accounts);
 
+    println!(
+        "Success: The entry for '{}' has been saved successfully",
+        label
+    );
+}
+
+/// Saves all accounts to the `passwords.json` file.
+///
+/// This function overwrites the existing `passwords.json` file with the provided list
+/// of accounts. It ensures that the file contains the latest account data.
+///
+/// # Arguments
+///
+/// * `accounts` - A reference to a `Vec<Account>` containing the accounts to be saved.
+///
+/// # Example
+///
+/// ```rust
+/// util::save_to_file(&accounts);
+/// ```
+///
+/// # Errors
+///
+/// This function will panic if there are issues opening, writing, or serializing the file.
+pub fn save_to_file(accounts: &Vec<Account>) {
     let path = get_password_file_path();
 
     let file = OpenOptions::new()
@@ -88,16 +127,6 @@ pub fn save_to_file(account: Account) {
     let writer = BufWriter::new(file);
 
     to_writer_pretty(writer, &accounts).unwrap();
-
-    println!(
-        "Wrote {} {}",
-        accounts.len(),
-        if accounts.len() == 1 { "byte" } else { "bytes" }
-    );
-    println!(
-        "Success: The entry for '{}' has been saved successfully",
-        label
-    );
 }
 
 /// Prompts the user to input a string.
