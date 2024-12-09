@@ -1,0 +1,30 @@
+name: Cleanup Workflow Runs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Delete Old Workflow Runs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="leonhard-leung/password-manager"
+          BASE_URL="https://api.github.com/repos/$REPO/actions/runs"
+          HEADERS="Authorization: token $GITHUB_TOKEN"
+
+          # Get the list of workflow runs
+          RUNS=$(curl -H "$HEADERS" "$BASE_URL?status=completed&per_page=100" | jq -r '.workflow_runs[] | select(.created_at < "2024-12-01T00:00:00Z") | .id')
+
+          # Iterate over each run ID and delete it
+          for RUN_ID in $RUNS; do
+            echo "Deleting run ID: $RUN_ID"
+            curl -X DELETE -H "$HEADERS" "$BASE_URL/$RUN_ID"
+          done
