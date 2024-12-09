@@ -7,87 +7,38 @@ on:
     branches: [ "main" ]
 
 jobs:
-  setup:
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      rust-cache-hit: ${{ steps.rust-toolchain-build.outputs.cache-hit }}
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Caching Rust Toolchain
-        id: rust-toolchain-build
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo
-            ~/.rustup
-          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
-          restore-keys: |
-            rust-toolchain-
-
-      - name: Install Rust (if not cached)
-        if: ${{ steps.rust-toolchain-build.outputs.cache-hit != 'true' }}
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
+      - name: Build
+        run: cargo build --verbose
+        
   format:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
-    
-      - name: Restore Rust Toolchain Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo
-            ~/.rustup
-          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
-          restore-keys: |
-            rust-toolchain-
-            
+
       - name: Check Format
         run: cargo fmt -- --check
-
+        
   lint:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
-    
-      - name: Restore Rust Toolchain Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo
-            ~/.rustup
-          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
-          restore-keys: |
-            rust-toolchain-
-            
+
       - name: Check Lint
         run: cargo clippy -- -D warnings
 
   test:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
-    
-      - name: Restore Rust Toolchain Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo
-            ~/.rustup
-          key: rust-toolchain-${{ hashFiles('Cargo.lock') }}
-          restore-keys: |
-            rust-toolchain-
     
       - name: Run Tests
         run: cargo test
