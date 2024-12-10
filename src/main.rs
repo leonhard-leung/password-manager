@@ -21,22 +21,7 @@ enum Commands {
     Add {},
 
     /// Edit the attributes of an existing account
-    Edit {
-        #[arg(short = 'l', long = "label")]
-        label: String,
-
-        #[arg(short = 'u', long = "username")]
-        username: String,
-
-        #[arg(short = 'e', long = "email")]
-        email: String,
-
-        #[arg(short = 'p', long = "password")]
-        password: String,
-
-        #[arg(short = 'd', long = "description")]
-        description: String,
-    },
+    Edit { label: String, },
 
     /// Generate a new password for an existing account
     GenPass {
@@ -69,13 +54,9 @@ fn main() {
             manager::add();
         }
 
-        Some(Commands::Edit {
-            label,
-            username,
-            email,
-            password,
-            description,
-        }) => {}
+        Some(Commands::Edit { label}) => {
+            manager::edit(label);
+        }
 
         Some(Commands::GenPass { length, label }) => {}
 
