@@ -20,10 +20,12 @@ jobs:
           BASE_URL="https://api.github.com/repos/$REPO/actions/runs"
           HEADERS="Authorization: token $GITHUB_TOKEN"
 
-          # Get the list of workflow runs
-          RUNS=$(curl -H "$HEADERS" "$BASE_URL?status=completed&per_page=100" | jq -r '.workflow_runs[] | select(.created_at < "2024-12-01T00:00:00Z") | .id')
+          YESTERDAY=$(date -u -d "1 day ago" '+%Y-%m-%dT%H:%M:%SZ')
 
-          # Iterate over each run ID and delete it
+          echo "Deleting workflow runs created before $YESTERDAY"
+
+          RUNS=$(curl -H "$HEADERS" "$BASE_URL?status=completed&per_page=100" | jq -r --arg YESTERDAY "$YESTERDAY" '.workflow_runs[] | select(.created_at < $YESTERDAY) | .id')
+
           for RUN_ID in $RUNS; do
             echo "Deleting run ID: $RUN_ID"
             curl -X DELETE -H "$HEADERS" "$BASE_URL/$RUN_ID"
