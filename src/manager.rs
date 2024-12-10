@@ -218,7 +218,7 @@ pub fn edit(label: String) {
             account.email = new_email;
         }
 
-        if !new_password.is_none() {
+        if new_password.is_some() {
             account.password = new_password.unwrap();
         }
 
@@ -229,7 +229,11 @@ pub fn edit(label: String) {
         util::save_to_file(&accounts);
         println!("Success: The entry '{}' has been updated", label);
     } else {
-        println!("Error: An entry with the label '{}' cannot be found. Please check the label and try again.", label);
+        println!(
+            "Error: An entry with the label '{}' cannot be found. \
+            Please check the label and try again.",
+            label
+        );
     }
 }
 

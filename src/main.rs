@@ -21,7 +21,7 @@ enum Commands {
     Add {},
 
     /// Edit the attributes of an existing account
-    Edit { label: String, },
+    Edit { label: String },
 
     /// Generate a new password for an existing account
     GenPass {
@@ -54,7 +54,7 @@ fn main() {
             manager::add();
         }
 
-        Some(Commands::Edit { label}) => {
+        Some(Commands::Edit { label }) => {
             manager::edit(label);
         }
 
