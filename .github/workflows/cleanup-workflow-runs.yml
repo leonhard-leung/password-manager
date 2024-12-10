@@ -14,11 +14,11 @@ jobs:
 
       - name: Delete Old Workflow Runs
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           REPO="leonhard-leung/password-manager"
           BASE_URL="https://api.github.com/repos/$REPO/actions/runs"
-          HEADERS="Authorization: token $GITHUB_TOKEN"
+          HEADERS="Authorization: token $GH_PAT"
 
           YESTERDAY=$(date -u -d "1 day ago" '+%Y-%m-%dT%H:%M:%SZ')
 
