@@ -121,6 +121,7 @@ pub fn add() {
 /// * `label` - the name of the account to be removed.
 ///
 /// # Example
+///
 /// ```rust
 /// let label = String::from("Sample Account");
 /// util::remove(label);
@@ -146,6 +147,91 @@ pub fn remove(label: String) {
         println!(
             "Error: An entry with the label '{}' cannot be found. \
             Please check the label and try again",
+            label
+        );
+    }
+}
+
+/// Edits an existing account from the application.
+///
+/// This function allows the user to update the details of an account identified by its label
+/// The user is prompted to input new values for each field. Pressing Enter without typing a
+/// value will leave the field unchanged. If the specified account label is not found, an error
+/// message will be displayed.
+///
+/// # Arguments
+///
+/// * `label` - the name of the account to be edited
+///
+/// # Example
+///
+/// ```rust
+/// let label = String::from("Sample Account");
+/// util::edit(label);
+/// ```
+///
+/// # Errors
+///
+/// This function will panic if the file cannot be written to during the save operation
+///
+pub fn edit(label: String) {
+    println!("// Just press enter if you don't want to change a field //");
+
+    let new_label = util::get_user_input("New Label: ");
+    let new_username = util::get_user_input("Username: ");
+    let new_email = util::get_user_input("Email: ");
+
+    let password_change = loop {
+        let input = util::get_user_input("Change Password? <y/n>: ").to_lowercase();
+        if input == "y" || input == "n" {
+            break input;
+        }
+        println!("Invalid input. Please enter 'y' or 'n'.");
+    };
+
+    let new_password = if password_change == "y" || password_change == "yes" {
+        Some(util::get_password())
+    } else {
+        None
+    };
+
+    let new_description = util::get_user_input("Description: ");
+
+    let mut accounts: Vec<Account> = match get_data() {
+        Ok(accounts) => accounts,
+        Err(e) => {
+            println!("Error getting data: {}", e);
+            return;
+        }
+    };
+
+    if let Some(account) = accounts.iter_mut().find(|account| account.label == label) {
+        if !new_label.is_empty() {
+            account.label = new_label;
+        }
+
+        if !new_username.is_empty() {
+            account.username = new_username;
+        }
+
+        if !new_email.is_empty() {
+            account.email = new_email;
+        }
+
+        if new_password.is_some() {
+            account.password = new_password.unwrap();
+        }
+
+        if !new_description.is_empty() {
+            account.description = new_description;
+        }
+
+        util::save_to_file(&accounts);
+        println!("Success: The entry '{}' has been updated", label);
+    } else {
+        println!(
+            "Error: An entry with the label '{}' cannot be found. \
+            Please check the label and try again.",
             label
         );
     }
